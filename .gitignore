@@ -1,0 +1,13 @@
+build/
+sdkconfig
+sdkconfig.old
+managed_components/
+# private: generated from the tracker's key file
+main/keys.h
+build-*/
+*.log
+.DS_Store
+__pycache__/
+
+# Private notes (personal setup details)
+HANDOFF-*.md

@@ -1,0 +1,44 @@
+CONFIG_IDF_TARGET="esp32c3"
+
+# Bluetooth: NimBLE, broadcaster only
+CONFIG_BT_ENABLED=y
+CONFIG_BT_NIMBLE_ENABLED=y
+CONFIG_BT_NIMBLE_ROLE_BROADCASTER=y
+CONFIG_BT_NIMBLE_ROLE_CENTRAL=n
+CONFIG_BT_NIMBLE_ROLE_PERIPHERAL=n
+CONFIG_BT_NIMBLE_ROLE_OBSERVER=n
+CONFIG_BT_NIMBLE_SECURITY_ENABLE=n
+
+# Power management: light sleep whenever idle
+CONFIG_PM_ENABLE=y
+CONFIG_FREERTOS_USE_TICKLESS_IDLE=y
+CONFIG_FREERTOS_IDLE_TIME_BEFORE_SLEEP=3
+
+# Radio sleeps between events. The SuperMini has no 32 kHz crystal, so the
+# BLE sleep clock is the internal RC. Too inaccurate for connections, fine
+# for advertising, which is all a Find My beacon does.
+CONFIG_BT_CTRL_MODEM_SLEEP=y
+CONFIG_BT_CTRL_MODEM_SLEEP_MODE_1=y
+CONFIG_RTC_CLK_SRC_INT_RC=y
+CONFIG_BT_CTRL_LPCLK_SEL_RTC_SLOW=y
+
+# Console on the built-in USB; keep light sleep off while USB is connected so
+# logs and flashing keep working
+CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y
+CONFIG_USJ_NO_AUTO_LS_ON_CONNECTION=y
+
+# Faster, quieter boot
+CONFIG_BOOTLOADER_LOG_LEVEL_WARN=y
+CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
+
+# Exact voltage over BTHome: not wanted (fixed address, extra power)
+CONFIG_TRACKER_BTHOME=n
+
+# Extra sleep savings (Espressif power_save example + esp_pm docs)
+CONFIG_PM_POWER_DOWN_CPU_IN_LIGHT_SLEEP=y
+CONFIG_PM_SLP_DISABLE_GPIO=y
+# Breaks advertising in light sleep with the 136 kHz RC sleep clock (tested 2026-09-25)
+# CONFIG_ESP_PHY_MAC_BB_PD is not set
+CONFIG_PM_SLP_IRAM_OPT=y
+CONFIG_PM_RTOS_IDLE_OPT=y
+CONFIG_FREERTOS_HZ=1000

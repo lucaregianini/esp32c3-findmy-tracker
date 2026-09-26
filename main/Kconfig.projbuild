@@ -1,0 +1,51 @@
+menu "Find My tracker"
+
+    config TRACKER_ADV_INTERVAL_MS
+        int "Find My advertising interval (ms)"
+        range 100 10000
+        default 2000
+        help
+            A real AirTag away from its owner advertises about every 2 s.
+            Longer saves current; phones then hear the tracker less often.
+
+    config TRACKER_ROTATION_MIN
+        int "Minutes on each key before rotating"
+        range 1 1440
+        default 5
+
+    config TRACKER_BATTERY_CHECK_MIN
+        int "Minutes between battery readings"
+        range 1 1440
+        default 15
+
+    config TRACKER_BATTERY_GPIO_CHANNEL
+        int "ADC1 channel of the battery divider (GPIO3 = 3)"
+        range 0 4
+        default 3
+
+    config TRACKER_DIVIDER_X1000
+        int "Divider ratio x1000 (pack mV = pin mV * this / 1000)"
+        default 2000
+        help
+            2000 for two equal resistors. Calibrate against a multimeter.
+
+    config TRACKER_BTHOME
+        bool "Also broadcast battery % and voltage as BTHome (for Home Assistant)"
+        default y
+        help
+            Sends a short BTHome burst so Home Assistant's Bluetooth (or an
+            ESPHome proxy) gets the exact voltage when the tracker is nearby.
+            It uses a fixed address, so it is identifiable by anyone scanning.
+
+    config TRACKER_BTHOME_EVERY_MIN
+        int "Minutes between BTHome bursts"
+        depends on TRACKER_BTHOME
+        range 1 1440
+        default 5
+
+    config TRACKER_BTHOME_NAME
+        string "BTHome device name"
+        depends on TRACKER_BTHOME
+        default "c3tracker"
+
+endmenu

@@ -1,0 +1,2 @@
+# Test only: allow light sleep while USB is connected, to reproduce battery behaviour
+# CONFIG_USJ_NO_AUTO_LS_ON_CONNECTION is not set

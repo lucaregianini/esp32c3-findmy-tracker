@@ -1,0 +1,314 @@
+# How to build your own AirTag
+
+A simple, step-by-step guide to making another homemade tracker like **c3tracker**.
+No tech knowledge needed: just follow the steps in order and do the small checks
+("✓ You should see…") before moving on.
+
+---
+
+## What you are building
+
+- A small white box (with a thin red line around the bottom) that you put in a bag, a bike, etc.
+- Inside: a tiny computer board (the **C3**) and **3 normal AA batteries**.
+- It does **not** have GPS, a SIM card or Wi-Fi.
+- Instead, it quietly "calls out" to any iPhone that walks past. That iPhone anonymously tells Apple where it saw the tracker — exactly how Apple's AirTags work.
+- Your **Home Assistant** (the smart-home computer at home) collects that location, and the **Orbit Home** app shows it on a map.
+- Batteries last about **2–4 months** (up to a year if you remove the small red light on the board — see "Looking after your tracker").
+
+---
+
+## Good news: the hard part is already done ✅
+
+These were set up once and you don't need to do them again (only if you get a new Mac or reinstall Home Assistant):
+
+- The programs on your Mac that put the "brain" (software) on the board.
+- The **FindMy** add-on in Home Assistant, signed in with your Apple ID.
+- The Home Assistant rule that checks for new locations **every 5 minutes** when a tracker is away from home.
+- The **Trackers** banner and map in Orbit Home.
+- The 3D-print files for the box.
+
+So for each new tracker you only do the steps below. It takes about **1 hour of printing** plus **about 30–45 minutes of your time**.
+
+---
+
+## Shopping list (per tracker)
+
+Most of it is at **Fabian Enterprises, Gżira** (tel. 21 313 283). The codes help the shop find them.
+
+| What | Shop code | About |
+|------|-----------|-------|
+| ESP32-C3 SuperMini board (the tiny computer) | — you already have spares | €3–5 |
+| Battery holder for 3 AA batteries, flat, with wires | HR0309-22A | €0.69 |
+| 3 × AA batteries (the 10-pack is cheapest) | 26-1562BBULK | about €1.85 |
+| 2 × resistors, 1 MΩ ("one mega-ohm") | RM1M.25 | €0.20 |
+| 1 × small capacitor with **104** printed on it | CC100NV50 | €0.19 |
+| A little wire, electrical tape or heat-shrink | — | — |
+| Double-sided tape: **foam** (about 1 mm) for the short end, **thin** tape for the long sides | — | — |
+| Some normal packing foam (optional, stops rattling) | — | — |
+| 2 small wood screws with a flat head, 3–4 mm thick, 12–20 mm long | — | — |
+| White and a little red 3D-printer filament (PLA) | — | about €0.60 |
+
+**Total: about €7–9 per tracker.**
+
+**Tools:** soldering iron and solder, a multimeter, a USB-C cable, a small screwdriver.
+
+⚠️ **Two safety rules:**
+1. **Never** plug the USB cable in while the batteries are in the holder.
+2. **Don't** use black or pink "anti-static" foam inside the box (it can conduct electricity). Normal packing foam is fine.
+
+---
+
+## Part 1 — Print the box (about 65 minutes, runs by itself)
+
+Start this first; you can do the other parts while it prints.
+
+1. On the Mac, open **Bambu Studio**.
+2. Click **File → Open Project**.
+3. Go to your **Projects → c3-tracker-case → print** folder.
+4. Open **C3 Tracker - Shell (white + red stripe).3mf**.
+5. On the left, click the **Others** tab and scroll to **Prime tower**. Make sure **Enable is unticked**. (Bambu sometimes ticks it by itself — it only wastes plastic.)
+6. Click **Slice plate** (top right). Wait until it says "Slice ok".
+7. Click **Print plate**.
+8. In the window that opens, check the colours: **filament 1 = your white slot**, **filament 2 = your red slot**. Click **Send**.
+9. When it's done, do the same with **C3 Tracker - Back (white).3mf** (only white, about 10 minutes).
+
+✓ **You should have:** a white box with a thin red line at the bottom edge, and a white flat lid.
+
+---
+
+## Part 2 — Connect the batteries to the board (soldering)
+
+**Soldering** means joining wires with melted metal (solder) using the hot soldering iron.
+
+Look at the C3 board with the USB socket at the bottom. One edge has small labels. Starting from the USB end, the holes are: **5V, G, 3.3, 4, 3, 2, 1, 0**.
+
+1. Take the battery holder. It has a **red** wire and a **black** wire.
+2. Solder the **red** wire into the hole labelled **5V**.
+3. Solder the **black** wire into the hole labelled **G** (G means "ground", the minus side).
+
+✓ **Quick test:** put the 3 batteries in → a small **red light** on the board turns on. Then **take the batteries out again** for the next part.
+
+---
+
+## Part 3 — Add the "battery level" parts
+
+These three tiny parts let the tracker measure its own batteries, so Home Assistant can tell you when they're getting low.
+
+- A **resistor** is a small part with coloured stripes and a wire on each end. You have two of them — call them **A** and **B**.
+- The **capacitor** is the tiny orange/yellow blob with **104** on it — call it **C**. It doesn't matter which way round it goes.
+
+Follow these small steps:
+
+1. Hold **B** and **C** side by side.
+2. Twist **one wire of B** together with **one wire of C**, and solder them. (This is the "bottom" joint.)
+3. Twist the **other wire of B** together with the **other wire of C**. Now B and C form a little loop.
+4. Add **one wire of A** to that second joint too, and solder all three together. (This is the "top" joint.)
+5. Solder a short piece of wire from the **top joint** to hole **3** on the board (the 5th hole from the USB end).
+6. Connect the **bottom joint** to the **black** battery wire (strip a tiny bit of insulation off the black wire, and solder it there).
+7. Connect the **free wire of A** to the **red** battery wire the same way.
+8. Cover **every** bare metal bit and joint with electrical tape or heat-shrink, so nothing can touch anything else.
+
+Here's the same thing as a picture:
+
+```
+   A's free wire  ──►  red battery wire
+        │
+       [A]  resistor
+        │
+   ●━━━━┷━━━━●   ← TOP joint (with A)    ──wire──►  hole 3
+   ┃         ┃
+  [B]       [C]   resistor + "104" capacitor
+   ┃         ┃
+   ●━━━━━━━━━●   ← BOTTOM joint          ──wire──►  black battery wire
+```
+
+**Check it with the multimeter** (no batteries, no USB):
+
+1. Turn the dial to **2000k** (it measures resistance).
+2. Touch one probe to hole **3** and the other to **G**.
+3. ✓ **You should see** the number slowly climb and settle around **1000** (that means about 1 MΩ — the slow climb is normal).
+4. Turn the dial to the **beep** setting. Touch hole **3** and hole **4** → ✓ **no beep**. Hole **3** and **3.3** → ✓ **no beep**. **5V** and **G** → ✓ **no beep**.
+
+If something beeps, two bits of metal are touching — find it and fix it before going on.
+
+---
+
+## Part 4 — Put the software on the board
+
+This gives the tracker its own secret "keys" (its identity) and the battery-saving software.
+
+1. Make sure the **batteries are OUT**.
+2. Plug the C3 into the Mac with the **USB-C cable**.
+3. Open the **Terminal** app on the Mac (press **⌘ + Space**, type **Terminal**, press **Enter**). It's a window where you type commands.
+4. Choose a **name** for your tracker: small letters only, no spaces, e.g. **backpack**, **bike**, **suitcase**.
+5. Copy this line, change **backpack** to your name, paste it into Terminal and press **Enter**:
+
+```bash
+~/Projects/c3-findmy-fw/tools/new-tracker.sh backpack
+```
+
+6. It works for a minute, then asks: **"Flash 'backpack' … ? [y/N]"**. Type **y** and press **Enter**.
+7. ✓ **You should see** "Flashed." and "Done." at the end.
+
+It also made a small file that Home Assistant needs, called **backpack.findmy.json** (in your **Projects → go-haystack** folder). You'll use it in Part 6.
+
+**If it says "Flash failed":** the board is asleep. On the board, **hold the BOOT button, tap RST, let go of BOOT**, then run the same line again.
+
+---
+
+## Part 5 — Check the tracker is "calling out"
+
+1. **Unplug** the USB cable.
+2. Put the **3 batteries** in → the red light turns on.
+3. In Terminal, copy, paste and press **Enter**:
+
+```bash
+cd ~/Projects/go-haystack && ~/go/bin/haystack scan
+```
+
+4. ✓ **You should see** lines appearing. Look for one ending in **"- battery full"** with a number around **-40 to -65** (that's the signal strength; closer to 0 = stronger).
+5. Lines that say "unregistered" are other people's devices — ignore them.
+6. Press **Control + C** to stop.
+
+---
+
+## Part 6 — Add it to Home Assistant
+
+1. Open Home Assistant in the browser.
+2. Go to **Settings → Devices & services**.
+3. Click **FindMy**, then **Add device**.
+4. Choose **"Rolling-key device with pre-generated keys"**.
+5. For the name, type **exactly** the name you chose in Part 4 (e.g. **backpack**).
+6. Upload the file **backpack.findmy.json** from your **Projects → go-haystack** folder.
+7. ✓ **You should now have** a new tracker called **device_tracker.findmy_backpack**.
+
+**Optional — battery %:** Settings → Devices & services → **Helpers** → **Create helper** → **Template** → **Template a sensor**. Name: *Backpack Battery*. State template:
+`{{ state_attr('device_tracker.findmy_backpack', 'battery_level') }}`
+Unit **%**, device class **Battery**. Save.
+
+---
+
+## Part 7 — Show it in Orbit Home
+
+1. Open **Orbit Home** on your iPhone.
+2. Go to **Settings → Entity Mapping**.
+3. Find **"Luca's Trackers"**.
+4. At the end, type a comma and the new tracker, so it looks like this:
+
+```
+device_tracker.findmy_c3tracker, device_tracker.findmy_backpack
+```
+
+5. ✓ Go back to Home — the **Trackers** banner now says **"2 trackers · All home"**. Tap it to see both on the map.
+
+---
+
+## Part 8 — Include it in the "check every 5 minutes" rule
+
+1. In Home Assistant go to **Settings → Automations & scenes**.
+2. Open the automation that fetches the trackers every 5 minutes.
+3. Click the **three dots (⋮)** top right → **Edit in YAML**.
+4. Delete everything and paste this. Make sure **every tracker you own** is in the list near the top:
+
+```yaml
+alias: Find My trackers – fetch every 5 min while away
+triggers:
+  - trigger: time_pattern
+    minutes: "/5"
+variables:
+  away: >
+    {{ ['device_tracker.findmy_c3tracker',
+        'device_tracker.findmy_backpack']
+       | reject('is_state', 'home') | list }}
+conditions:
+  - condition: template
+    value_template: "{{ away | count > 0 }}"
+actions:
+  - action: homeassistant.update_entity
+    target:
+      entity_id: "{{ away }}"
+mode: single
+```
+
+5. Click **Save**.
+
+(Checking several trackers at once is still just one request to Apple, so adding more trackers doesn't make anything slower or riskier.)
+
+---
+
+## Part 9 — Put it all together
+
+1. **Batteries out.**
+2. Place the battery holder in the box, **batteries facing the open side**, with its **wires at the end that has the bigger gap**.
+3. Take it out again. Stick **foam double-sided tape** on the **short end without wires**, and **thin double-sided tape** (not foam — there's only 0.5 mm of room) on the **two long sides**. Press it back in firmly.
+4. Place the **C3 board** and the **taped battery-level parts** in the space on top of the holder (about 8 mm of room — keep them flat).
+5. Optional: add a little packing foam so nothing rattles.
+6. Put the **batteries** back in (red light on).
+7. Put the **lid** on and screw in the **2 screws** — firm, but **don't over-tighten** (plastic strips easily).
+
+---
+
+## Part 10 — Final test
+
+1. Run the scan from Part 5 again, with the box closed → ✓ still **"battery full"**.
+2. Leave it near your iPhone for **15–30 minutes**. Open **Orbit Home → Trackers** and tap the **refresh** button (↻) → ✓ it shows **Home**, a battery level and "Seen … ago".
+3. Best test: take it out in a bag for 30–60 minutes and watch it move on the map.
+
+🎉 Done — your new tracker is working.
+
+---
+
+## Looking after your tracker
+
+**Battery levels (in Home Assistant / Orbit Home):**
+
+| Shows | Means | What to do |
+|---|---|---|
+| **90% / Full** | plenty left | nothing |
+| **65% / Medium** | about half | nothing |
+| **40% / Low** | getting low | buy batteries |
+| **15% / Critical** | nearly empty | replace now |
+
+**Changing the batteries:** unscrew the 2 screws, swap the 3 AAs, close it. Nothing else to do.
+
+**Make batteries last much longer (optional):** the small red light on the board is always on and uses most of the power. Carefully removing it with the soldering iron makes the batteries last up to about a year.
+
+**Updating the software later:** batteries out, plug in USB, run the same line from Part 4 with the **same name**. It keeps the tracker's identity, so Home Assistant and Orbit Home don't change.
+
+---
+
+## If something goes wrong
+
+| If this happens… | …do this |
+|---|---|
+| The tracker doesn't appear in the scan | Are the batteries in and the red light on? Check the red and black wires are soldered well. |
+| It appears in the scan but never shows a location | It needs an iPhone nearby to report it. Wait 30 minutes, or take it outside where people pass. |
+| The location in Orbit Home is old | Tap refresh in the Trackers screen. If it doesn't change, Apple just hasn't received a newer report yet — that's normal. |
+| It says "Home" but you're outside | You're probably still close to the house (within about 100 m). |
+| Home Assistant asks you to log in to FindMy again | Apple reset the login. Just log in again with your Apple ID and code. |
+| Part 4 says "Flash failed" | Hold **BOOT**, tap **RST**, let go of **BOOT**, and run it again. |
+| Your iPhone says "Unknown accessory detected" | Normal: it's Apple's anti-stalking protection. Just dismiss it. |
+
+---
+
+## Keep it private
+
+- Never share or upload the files ending in **.keys**, **.json** or **.findmy.json** in your **Projects → go-haystack** folder — they're the trackers' secret keys.
+- These trackers are for **your own things only**. Never use one to track a person.
+
+---
+
+## Words used in this guide
+
+| Word | Meaning |
+|---|---|
+| **C3 / ESP32-C3 SuperMini** | The tiny computer board inside the tracker. |
+| **Soldering** | Joining wires with melted metal using a hot iron. |
+| **Resistor** | A tiny part with coloured stripes that controls electricity. |
+| **Capacitor** | A tiny part that stores a little electricity (ours says "104"). |
+| **Multimeter** | A tool that measures electricity; the "beep" mode checks if two points are connected. |
+| **Terminal** | A Mac app where you type commands. |
+| **Flash** | Putting the software onto the board. |
+| **Home Assistant** | Your smart-home computer at home. |
+| **Entity** | Home Assistant's name for one device, like *device_tracker.findmy_backpack*. |
+| **Find My network** | Apple's system where iPhones anonymously help find AirTags. |

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<custom_gcodes_per_layer>
+<plate>
+<plate_info id="1"/>
+<layer top_z="29.6" type="2" extruder="2" color="#C8102E" extra="" gcode="tool_change"/>
+<mode value="MultiAsSingle"/>
+</plate>
+</custom_gcodes_per_layer>

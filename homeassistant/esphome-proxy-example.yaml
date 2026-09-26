@@ -1,0 +1,30 @@
+# Add these blocks to an existing ESPHome device (ESP32 / ESP32-C3, framework
+# esp-idf) to make it a listen-only Bluetooth proxy for Find My Rooms.
+#
+# Why scanning is started from wifi on_connect: on single-radio chips like the
+# ESP32-C3, continuous Bluetooth scanning from boot can stop the board from
+# finishing the WiFi join (auth / 4-way handshake timeouts). Scanning only
+# while connected avoids that. Test a few reboots after flashing.
+
+wifi:
+  # ... your existing ssid / password / power settings ...
+  on_connect:
+    - esp32_ble_tracker.start_scan:
+        continuous: true
+  on_disconnect:
+    - esp32_ble_tracker.stop_scan:
+
+esp32_ble_tracker:
+  scan_parameters:
+    active: false      # passive: listen only
+    continuous: false  # no scanning at boot; wifi on_connect starts it
+    interval: 320ms
+    window: 160ms      # 50% of radio time for BLE, the rest left for WiFi
+
+bluetooth_proxy:
+  active: false        # trackers only advertise; no connections needed
+
+# Handy for testing that the hub rejoins WiFi after a restart.
+button:
+  - platform: restart
+    name: "Restart"

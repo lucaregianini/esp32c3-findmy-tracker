@@ -1,0 +1,13 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Find My Rooms",
+        "description": "Shows which room hub each DIY Find My tracker is near. Trackers and rooms are set in /config/findmy_rooms.json."
+      }
+    },
+    "abort": {
+      "already_configured": "Find My Rooms is already set up."
+    }
+  }
+}
